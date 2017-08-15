@@ -513,7 +513,9 @@ namespace UsabilityDynamics\WPIE {
 
                         send_notification( $invoice );
 
-                        $data['messages'][] = $result->getMessages()[0]->getDescription();
+                        $result_messages = $result->getMessages();
+
+                        $data['messages'][] = $result_messages[0]->getDescription();
                         $response['success'] = true;
                         $response['error'] = false;
                         $response['data'] = $data;
@@ -524,7 +526,8 @@ namespace UsabilityDynamics\WPIE {
                         $response['error'] = true;
 
                         if ($result->getErrors() != null) {
-                            $data['messages'][] = $result->getErrors()[0]->getErrorText();
+                            $result_messages = $result->getMessages();
+                            $data['messages'][] = $result_messages[0]->getErrorText();
                         } else {
                             $data['messages'][] = __( '002: Unknown eCheck.net Payment Error Occurred. Please contact support.' );
                         }
@@ -540,9 +543,11 @@ namespace UsabilityDynamics\WPIE {
                     $response['error'] = true;
 
                     if ($result != null && $result->getErrors() != null) {
-                        $data['messages'][] = $result->getErrors()[0]->getErrorText();
+                        $result_errors = $result->getErrors();
+                        $data['messages'][] = $result_errors[0]->getErrorText();
                     } else {
-                        $data['messages'][] = $res->getMessages()->getMessage()[0]->getText();
+                        $result_messages = $res->getMessages()->getMessage();
+                        $data['messages'][] = $result_messages[0]->getText();
                     }
 
                     $response['data'] = $data;
