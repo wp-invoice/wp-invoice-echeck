@@ -2,7 +2,7 @@
   "name": "wp-invoice-echeck",
   "title": "WP-Invoice eCheck",
   "description": "Authorize.net eCheck",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://www.usabilitydynamics.com",
   "author": {
     "name": "UsabilityDynamics, Inc.",

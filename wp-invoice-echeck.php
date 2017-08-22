@@ -4,7 +4,7 @@
  * Plugin URI: https://www.usabilitydynamics.com
  * Description: Authorize.net eCheck
  * Author: Usability Dynamics, Inc.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Text Domain: wpi-echeck
  * Author URI: http://usabilitydynamics.com
  *
