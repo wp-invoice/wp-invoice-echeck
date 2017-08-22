@@ -33,17 +33,6 @@ var wpi_echeck_rules = {
     digits: true,
     maxlength: 17
   },
-  "cc_data[bank_check_number]": {
-    required: {
-      param: true,
-      depends: function() {
-        return jQuery('#echeck_type').val() == 'ARC' || jQuery('#echeck_type').val() == 'BOC';
-      }
-    }
-  },
-  "cc_data[bank_name]": {
-    required: true
-  },
   "cc_data[bank_acct_name]": {
     required: true
   }
@@ -83,12 +72,6 @@ var wpi_echeck_messages = {
     required: "Account Number is required.",
     digits: "Account Number should contain only digits.",
     maxlength: "Account Number maximum length is 17 digits."
-  },
-  "cc_data[bank_check_number]": {
-    required: "Check Number is required for selected eCheck type."
-  },
-  "cc_data[bank_name]": {
-    required: "Bank Name is required."
   },
   "cc_data[bank_acct_name]": {
     required: "Bank Account Name is required."

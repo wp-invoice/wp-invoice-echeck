@@ -31,6 +31,7 @@ namespace UsabilityDynamics\WPIE {
                 add_filter('wpi_recurring_settings', create_function(' $gateways ', ' $gateways[] = "' . $this->type . '"; return $gateways; '));
                 add_action('wpi_recurring_settings_' . $this->type, array($this, 'recurring_settings'));
                 add_action('wpi_payment_fields_' . $this->type, array($this, 'wpi_payment_fields'));
+                add_filter('wpi_payment_form_styles', array( $this, 'custom_form_value' ), 10, 3);
 
                 /**
                  * Opations array for settings page
@@ -169,13 +170,6 @@ namespace UsabilityDynamics\WPIE {
                             ))
                         ),
 
-                        'bank_name'   => array(
-                            'type'   => 'text',
-                            'class'  => 'text-input bank_name',
-                            'name'   => 'cc_data[bank_name]',
-                            'label'  => __( 'Bank Name', ud_get_wp_invoice_echeck()->domain )
-                        ),
-
                         'bank_acct_name' => array(
                             'type'   => 'text',
                             'class'  => 'text-input bank_acct_name',
@@ -189,20 +183,10 @@ namespace UsabilityDynamics\WPIE {
                             'name'   => 'cc_data[echeck_type]',
                             'label'  => __( 'Check Type', ud_get_wp_invoice_echeck()->domain ),
                             'values' => serialize(array(
-                                'ARC' => 'ARC',
-                                'BOC' => 'BOC',
+                                'WEB' => 'WEB',
                                 'CCD' => 'CCD',
-                                'PPD' => 'PPD',
-                                'TEL' => 'TEL',
-                                'WEB' => 'WEB'
+                                'PPD' => 'PPD'
                             ))
-                        ),
-
-                        'bank_check_number' => array(
-                            'type'   => 'text',
-                            'class'  => 'text-input bank_check_number',
-                            'name'   => 'cc_data[bank_check_number]',
-                            'label'  => __( 'Check Number', ud_get_wp_invoice_echeck()->domain ),
                         )
 
                     )
@@ -210,6 +194,24 @@ namespace UsabilityDynamics\WPIE {
                 );
 
                 add_action( 'wpi_echeck_user_meta_updated', array( $this, 'user_meta_updated' ) );
+            }
+
+            /**
+             * @param $field_data
+             * @param $field_slug
+             * @param $type
+             */
+            public function custom_form_value(  $field_data, $field_slug, $type ) {
+
+                if ( $type != $this->type ) return $field_data;
+
+                if ( $field_slug != 'bank_acct_name' ) return $field_data;
+
+                global $invoice;
+
+                $field_data['value'] = (!empty($invoice['user_data']['first_name'])?$invoice['user_data']['first_name']:'').' '.(!empty($invoice['user_data']['last_name'])?$invoice['user_data']['last_name']:'');
+
+                return $field_data;
             }
 
             /**
@@ -422,11 +424,6 @@ namespace UsabilityDynamics\WPIE {
                 $bankAccount->setRoutingNumber( $input_data['bank_aba_code'] );
                 $bankAccount->setAccountNumber( $input_data['bank_acct_num'] );
                 $bankAccount->setNameOnAccount( $input_data['bank_acct_name'] );
-                $bankAccount->setBankName( $input_data['bank_name'] );
-
-                if ( !empty( $input_data['bank_check_number'] ) ) {
-                    $bankAccount->setCheckNumber( $input_data['bank_check_number'] );
-                }
 
                 // Bill to info
                 $customerAddress = new AnetAPI\CustomerAddressType();
