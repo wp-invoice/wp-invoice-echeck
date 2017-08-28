@@ -510,6 +510,8 @@ namespace UsabilityDynamics\WPIE {
 
                         send_notification( $invoice );
 
+                        do_action( 'wpi_echeck_payment_success', $result, $invoice );
+
                         $result_messages = $result->getMessages();
 
                         $data['messages'][] = $result_messages[0]->getDescription();
