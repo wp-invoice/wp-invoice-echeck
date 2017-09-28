@@ -37,8 +37,8 @@ namespace UsabilityDynamics\WPIE {
                  * Opations array for settings page
                  */
                 $this->options = array(
-                    'name' => 'Authorize.net eCheck',
-                    'public_name' => 'Authorize.net eCheck',
+                    'name' => 'eCheck',
+                    'public_name' => 'eCheck',
                     'allow' => true,
                     'default_option' => '',
                     'settings' => array(
