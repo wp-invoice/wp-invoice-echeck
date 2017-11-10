@@ -175,18 +175,6 @@ namespace UsabilityDynamics\WPIE {
                             'class'  => 'text-input bank_acct_name',
                             'name'   => 'cc_data[bank_acct_name]',
                             'label'  => __( 'Bank Account Name', ud_get_wp_invoice_echeck()->domain )
-                        ),
-
-                        'echeck_type' => array(
-                            'type'   => 'select',
-                            'class'  => 'text-input echeck_type',
-                            'name'   => 'cc_data[echeck_type]',
-                            'label'  => __( 'Check Type', ud_get_wp_invoice_echeck()->domain ),
-                            'values' => serialize(array(
-                                'WEB' => 'WEB',
-                                'CCD' => 'CCD',
-                                'PPD' => 'PPD'
-                            ))
                         )
 
                     )
@@ -238,7 +226,7 @@ namespace UsabilityDynamics\WPIE {
             public function recurring_settings( $this_invoice ) {
                 ?>
                 <h4><?php _e('eCheck Recurring Billing', ud_get_wp_invoice_echeck()->domain); ?></h4>
-                <p><?php _e('Currently Authorize.net eCheck gateway does not support Recurring Billing', ud_get_wp_invoice_echeck()->domain); ?></p>
+                <p><?php _e('Currently eCheck gateway does not support Recurring Billing', ud_get_wp_invoice_echeck()->domain); ?></p>
                 <?php
             }
 
@@ -417,10 +405,18 @@ namespace UsabilityDynamics\WPIE {
                 $merchantAuthentication->setName( $settings['gateway_username']['value'] );
                 $merchantAuthentication->setTransactionKey( $settings['gateway_tran_key']['value'] );
 
+                $check_types = array(
+                  'checking' => 'WEB',
+                  'savings' => 'WEB',
+                  'businesschecking' => 'CCD'
+                );
+
+                $check_type = !empty( $check_types[$input_data['bank_acct_type']] ) ? $check_types[$input_data['bank_acct_type']] : 'WEB';
+
                 // Create the payment data for a Bank Account
                 $bankAccount = new AnetAPI\BankAccountType();
                 $bankAccount->setAccountType( $input_data['bank_acct_type'] );
-                $bankAccount->setEcheckType( $input_data['echeck_type'] );
+                $bankAccount->setEcheckType( $check_type );
                 $bankAccount->setRoutingNumber( $input_data['bank_aba_code'] );
                 $bankAccount->setAccountNumber( $input_data['bank_acct_num'] );
                 $bankAccount->setNameOnAccount( $input_data['bank_acct_name'] );
@@ -470,7 +466,7 @@ namespace UsabilityDynamics\WPIE {
                 if ( null == $res ) {
                     $response['success'] = false;
                     $response['error'] = true;
-                    $data['messages'][] = __( '001: Unknown eCheck.net Payment Error Occurred. Please contact support.' );
+                    $data['messages'][] = __( '001: Unknown eCheck Payment Error Occurred. Please contact support.' );
                     $response['data'] = $data;
                     die( json_encode( $response ) );
                 }
@@ -484,7 +480,7 @@ namespace UsabilityDynamics\WPIE {
                         $invoice_obj = new \WPI_Invoice();
                         $invoice_obj->load_invoice("id={$invoice['invoice_id']}");
 
-                        $event_note = \WPI_Functions::currency_format($amount, $invoice['invoice_id']) . " paid via eCheck.net";
+                        $event_note = \WPI_Functions::currency_format($amount, $invoice['invoice_id']) . " paid via eCheck";
                         $event_amount = $amount;
                         $event_type = 'add_payment';
 
@@ -495,10 +491,10 @@ namespace UsabilityDynamics\WPIE {
                         $success = "Successfully processed by {$_SERVER['REMOTE_ADDR']}";
                         $invoice_obj->add_entry("attribute=invoice&note=$success&type=update");
 
-                        $payer_email = "eCheck.net Payer email: {$input_data['user_email']}";
+                        $payer_email = "eCheck Payer email: {$input_data['user_email']}";
                         $invoice_obj->add_entry("attribute=invoice&note=$payer_email&type=update");
 
-                        $trans_id = "eCheck.net Transaction ID: {$result->getTransId()}";
+                        $trans_id = "eCheck Transaction ID: {$result->getTransId()}";
                         $invoice_obj->add_entry("attribute=invoice&note=$trans_id&type=update");
 
                         $invoice_obj->save_invoice();
@@ -525,10 +521,11 @@ namespace UsabilityDynamics\WPIE {
                         $response['error'] = true;
 
                         if ($result->getErrors() != null) {
-                            $result_messages = $result->getMessages();
+                            $result_messages = $result->getErrors();
+
                             $data['messages'][] = $result_messages[0]->getErrorText();
                         } else {
-                            $data['messages'][] = __( '002: Unknown eCheck.net Payment Error Occurred. Please contact support.' );
+                            $data['messages'][] = __( '002: Unknown eCheck Payment Error Occurred. Please contact support.' );
                         }
 
                         $response['data'] = $data;
