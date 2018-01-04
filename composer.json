@@ -42,21 +42,11 @@
     "schemas": {
       "dependencies" : {
         "modules": {},
-        "plugins": [
-          {
-            "name": "WP-Invoice",
-            "slug": "wp-invoice",
-            "version": "4.0.0",
-            "required": true
-          }
-        ]
+        "plugins": []
       },
       "licenses" : {
         "client" : false,
-        "product" : {
-          "referrer": "wp-invoice/wp-invoice",
-          "product_id": "wp-invoice/wp-invoice-echeck"
-        }
+        "product" : false
       }
     }
   }
